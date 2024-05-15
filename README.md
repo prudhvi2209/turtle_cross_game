@@ -1,43 +1,26 @@
-#MAIN ............   
+from turtle import Turtle
 
-from turtle import Screen
-from player import Player
-import time
-from car_manager import CarManager
-from scoreboard import Scoreboard
+FONT=("Courier",24,"normal")
 
-screen=Screen()
-screen.tracer(0)
-screen.bgcolor("white")
-screen.title("Welcome to Turtle Race!!!!")
-player=Player()
-car_manager=CarManager()
-scoreboard=Scoreboard()
+class Scoreboard(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.level=1
+        self.hideturtle()
+        self.penup()
+        self.goto(-320,240)
+        self.update_scoreboard()
 
 
+    def update_scoreboard(self):
+        self.clear()
+        self.write(f"Level:{self.level}", align="Left", font=FONT)
 
-screen.listen()
-screen.onkey(player.move, "Up")
+    def increase_level(self):
+        self.level+=1
+        self.update_scoreboard()
 
-
-game_on=True
-while game_on:
-    time.sleep(0.1)
-    screen.update()
-    car_manager.create_cars()
-    car_manager.move_cars()
-
-    for car in car_manager.all_cars:
-        if car.distance(player)<20:
-            game_on=False
-            scoreboard.game_over()
-    if player.is_at_finish_line():
-        player.origin()
-        car_manager.level_up()
-        scoreboard.increase_level()
-
-
-
-
-screen.exitonclick()
-
+    def game_over(self):
+        self.goto(0,0)
+        self.write("GAME OVER!!!", align="center", font=FONT)
