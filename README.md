@@ -1,43 +1,31 @@
-#MAIN ............   
+import random
+from turtle import Turtle
+from random import randint
+COLORS=["red","green","yellow","pink","blue","black"]
+POSITION=(200,0)
+DISTANCE=10
 
-from turtle import Screen
-from player import Player
-import time
-from car_manager import CarManager
-from scoreboard import Scoreboard
+class CarManager:
 
-screen=Screen()
-screen.tracer(0)
-screen.bgcolor("white")
-screen.title("Welcome to Turtle Race!!!!")
-player=Player()
-car_manager=CarManager()
-scoreboard=Scoreboard()
+    def __init__(self):
+        self.all_cars=[]
+        self.car_speed=DISTANCE
 
+    def create_cars(self):
+        random_chance=random.randint(1,6)
+        if random_chance==2:
+            new_car = Turtle("square")
+            new_car.shapesize(stretch_wid=1, stretch_len=2)
+            new_car.penup()
+            new_car.color(random.choice(COLORS))
+            random_y = random.randint(-250, 250)
+            new_car.goto(300, random_y)
+            self.all_cars.append(new_car)
 
+    def move_cars(self):
+        for car in self.all_cars:
+            car.backward(self.car_speed)
 
-screen.listen()
-screen.onkey(player.move, "Up")
-
-
-game_on=True
-while game_on:
-    time.sleep(0.1)
-    screen.update()
-    car_manager.create_cars()
-    car_manager.move_cars()
-
-    for car in car_manager.all_cars:
-        if car.distance(player)<20:
-            game_on=False
-            scoreboard.game_over()
-    if player.is_at_finish_line():
-        player.origin()
-        car_manager.level_up()
-        scoreboard.increase_level()
-
-
-
-
-screen.exitonclick()
+    def level_up(self):
+        self.car_speed+=1
 
