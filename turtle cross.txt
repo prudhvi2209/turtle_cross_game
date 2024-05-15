@@ -1,0 +1,166 @@
+#MAIN ............   
+
+
+
+
+from turtle import Screen
+from player import Player
+import time
+from car_manager import CarManager
+from scoreboard import Scoreboard
+
+screen=Screen()
+screen.tracer(0)
+screen.bgcolor("white")
+screen.title("Welcome to Turtle Race!!!!")
+player=Player()
+car_manager=CarManager()
+scoreboard=Scoreboard()
+
+
+
+screen.listen()
+screen.onkey(player.move, "Up")
+
+
+game_on=True
+while game_on:
+    time.sleep(0.1)
+    screen.update()
+    car_manager.create_cars()
+    car_manager.move_cars()
+
+    for car in car_manager.all_cars:
+        if car.distance(player)<20:
+            game_on=False
+            scoreboard.game_over()
+    if player.is_at_finish_line():
+        player.origin()
+        car_manager.level_up()
+        scoreboard.increase_level()
+
+
+
+
+screen.exitonclick()
+
+
+
+
+
+
+
+
+
+#PLAYER
+
+
+
+
+
+from turtle import Turtle
+STARTING_POSITION=(0,-240)
+FINISH_LINE=(0,240)
+class Player(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.color("black")
+        self.shape("turtle")
+        self.penup()
+        self.goto(STARTING_POSITION)
+        self.setheading(90)
+
+    def move(self):
+        self.new_y=self.ycor()+20
+        self.goto(self.xcor(),self.new_y)
+
+    def origin(self):
+        self.goto(STARTING_POSITION)
+
+    def is_at_finish_line(self):
+        if self.ycor()>240:
+            return True
+        else:
+            return False
+
+
+
+
+
+
+
+
+#CARMANAGER
+
+
+
+import random
+from turtle import Turtle
+from random import randint
+COLORS=["red","green","yellow","pink","blue","black"]
+POSITION=(200,0)
+DISTANCE=10
+
+class CarManager:
+
+    def __init__(self):
+        self.all_cars=[]
+        self.car_speed=DISTANCE
+
+    def create_cars(self):
+        random_chance=random.randint(1,6)
+        if random_chance==2:
+            new_car = Turtle("square")
+            new_car.shapesize(stretch_wid=1, stretch_len=2)
+            new_car.penup()
+            new_car.color(random.choice(COLORS))
+            random_y = random.randint(-250, 250)
+            new_car.goto(300, random_y)
+            self.all_cars.append(new_car)
+
+    def move_cars(self):
+        for car in self.all_cars:
+            car.backward(self.car_speed)
+
+    def level_up(self):
+        self.car_speed+=1
+
+
+
+
+
+
+
+
+#SCORE BOARD
+
+
+
+
+from turtle import Turtle
+
+FONT=("Courier",24,"normal")
+
+class Scoreboard(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.level=1
+        self.hideturtle()
+        self.penup()
+        self.goto(-320,240)
+        self.update_scoreboard()
+
+
+    def update_scoreboard(self):
+        self.clear()
+        self.write(f"Level:{self.level}", align="Left", font=FONT)
+
+    def increase_level(self):
+        self.level+=1
+        self.update_scoreboard()
+
+    def game_over(self):
+        self.goto(0,0)
+        self.write("GAME OVER!!!", align="center", font=FONT)
